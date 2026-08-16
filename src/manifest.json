@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "WebMixer",
+    "version": "1.0.0",
+    "description": "Control two YouTube tabs with any standard hardware DJ controller.",
+    "permissions": [
+        "tabs",
+        "storage",
+        "scripting",
+        "notifications"
+    ],
+    "host_permissions": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "icons": {
+        "16": "icon.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "action": {
+        "default_title": "Open WebMixer",
+        "default_icon": "icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.youtube.com/*",
+                "https://youtube.com/*"
+            ],
+            "js": [
+                "youtube/youtube.js"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}

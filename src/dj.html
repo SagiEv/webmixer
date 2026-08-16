@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMixer</title>
+    <link rel="stylesheet" href="dj.css">
+</head>
+
+<body>
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="text-align: center;">
+                <div class="title">WebMixer</div>
+                <div class="subtitle">YouTube Dual Deck Controller</div>
+            </div>
+            <div id="queueContainerA" class="queue-container">
+                <div class="queue-badge">
+                    <span class="queue-label">A QUEUE</span>
+                    <span id="queueCountA" class="queue-count">0</span>
+                </div>
+                <div id="queueListA" class="queue-popup"></div>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="ytSearchInput" placeholder="Search YouTube..." autocomplete="off">
+            <div id="ytSearchResults" class="search-results-popup"></div>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div id="queueContainerB" class="queue-container">
+                <div class="queue-badge">
+                    <span class="queue-label">B QUEUE</span>
+                    <span id="queueCountB" class="queue-count">0</span>
+                </div>
+                <div id="queueListB" class="queue-popup queue-popup-right"></div>
+            </div>
+            <div id="midiStatus" class="midi disconnected">
+                MIDI DISCONNECTED
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- =================================================
+             TOP CONSOLE (DECK A | MIXER | DECK B)
+        ================================================== -->
+        <section class="dj-console">
+
+            <!-- DECK A -->
+            <article id="deckA" class="deck active">
+                <div class="deckHeader">
+                    <button id="focusA" class="focusButton">A</button>
+                    <div class="deckMeta">
+                        <div class="deckLabel">DECK A</div>
+                        <div id="titleA" class="videoTitle">No YouTube tab</div>
+                        <div class="tabSelectWrapper">
+                            <select id="tabSelectA" class="tabSelect">
+                                <option value="">Choose YouTube tab...</option>
+                            </select>
+                            <button id="reloadTabA" class="reloadTabButton" title="Force reload YouTube tab">↻</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tabInfo">
+                    <span id="tabA">No tab</span>
+                </div>
+
+                <div class="time">
+                    <span id="timeA">0:00</span>
+                    <span>/</span>
+                    <span id="durationA">0:00</span>
+                </div>
+
+                <div class="progress">
+                    <div id="progressA" class="progressFill"></div>
+                    <div id="cueMarkerA" class="cueMarker"></div>
+                </div>
+
+                <div class="deckControls">
+                    <button id="playA" class="largeButton">▶ / ❚❚</button>
+                    <button id="cueA" class="cueButton">CUE</button>
+                </div>
+
+                <div class="deckFaders">
+                    <div class="eq-section" id="eqA">
+                        <label>
+                            <span id="highLabelA">TREBLE</span>
+                            <input id="highA" type="range" min="0" max="100" value="50">
+                        </label>
+                        <label id="midContainerA" style="display: none;">
+                            MID
+                            <input id="midA" type="range" min="0" max="100" value="50">
+                        </label>
+                        <label>
+                            <span id="lowLabelA">BASS</span>
+                            <input id="lowA" type="range" min="0" max="100" value="50">
+                        </label>
+                    </div>
+                    <label id="volContainerA">
+                        VOLUME
+                        <input id="volumeA" type="range" min="0" max="100" value="100">
+                    </label>
+                    <div class="rate">
+                        SPEED <strong id="rateA">1.00x</strong>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MIXER -->
+            <section class="panel mixer">
+                <div class="panelTitle">MIXER</div>
+
+                <div class="mixerModes" style="display: flex; gap: 10px; margin-bottom: 6px; justify-content: center;">
+                    <button id="toggleEqMode" class="circle-btn neon-blue" title="Toggle 2-Band / 3-Band EQ">3 EQ</button>
+                    <button id="toggleScratchMode" class="circle-btn" title="Enable Scratch Mode">SCRATCH</button>
+                </div>
+
+                <label class="master-label">
+                    MASTER VOL
+                    <input id="masterVolume" type="range" min="0" max="100" value="100">
+                </label>
+
+                <!-- EFFECTS SECTION -->
+                <div class="effects-section">
+                    <div class="effect-header">
+                        <select id="effectType" class="effect-select">
+                            <option value="NONE">NO EFFECT</option>
+                            <option value="ECHO">ECHO</option>
+                            <option value="REVERB">REVERB</option>
+                            <option value="FLT">FILTER</option>
+                            <option value="FLU">FLANGER</option>
+                            <option value="PHS">PHASER</option>
+                            <option value="DLY">DELAY</option>
+                            <option value="ROL">ROLL</option>
+                            <option value="RPT">REPEAT</option>
+                        </select>
+                        <select id="effectDeck" class="effect-deck-select">
+                            <option value="MASTER">MASTER</option>
+                            <option value="A">DECK A</option>
+                            <option value="B">DECK B</option>
+                        </select>
+                    </div>
+                    
+                    <div class="beat-fractions" id="beatFractions">
+                        <button class="beat-btn" data-beat="0.5">1/2</button>
+                        <button class="beat-btn active" data-beat="1">1</button>
+                        <button class="beat-btn" data-beat="2">2</button>
+                        <button class="beat-btn" data-beat="4">4</button>
+                    </div>
+
+                    <div class="xy-pad-container">
+                        <div id="xyPad" class="xy-pad">
+                            <div id="xyNode" class="xy-node"></div>
+                            <div class="xy-label x-axis">PARAM X</div>
+                            <div class="xy-label y-axis">PARAM Y</div>
+                        </div>
+                        <label class="snap-toggle">
+                            <input type="checkbox" id="xySnapToggle" checked>
+                            Snap to Center
+                        </label>
+                    </div>
+                </div>
+
+                <div class="crossfader-section">
+                    <div class="crossHeader">
+                        <span>A</span>
+                        <strong id="crossValue">CENTER</strong>
+                        <span>B</span>
+                    </div>
+                    <input id="crossfader" type="range" min="0" max="100" value="50">
+                </div>
+            </section>
+
+            <!-- DECK B -->
+            <article id="deckB" class="deck">
+                <div class="deckHeader">
+                    <button id="focusB" class="focusButton">B</button>
+                    <div class="deckMeta">
+                        <div class="deckLabel">DECK B</div>
+                        <div id="titleB" class="videoTitle">No YouTube tab</div>
+                        <div class="tabSelectWrapper">
+                            <select id="tabSelectB" class="tabSelect">
+                                <option value="">Choose YouTube tab...</option>
+                            </select>
+                            <button id="reloadTabB" class="reloadTabButton" title="Force reload YouTube tab">↻</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tabInfo">
+                    <span id="tabB">No tab</span>
+                </div>
+
+                <div class="time">
+                    <span id="timeB">0:00</span>
+                    <span>/</span>
+                    <span id="durationB">0:00</span>
+                </div>
+
+                <div class="progress">
+                    <div id="progressB" class="progressFill"></div>
+                    <div id="cueMarkerB" class="cueMarker"></div>
+                </div>
+
+                <div class="deckControls">
+                    <button id="playB" class="largeButton">▶ / ❚❚</button>
+                    <button id="cueB" class="cueButton">CUE</button>
+                </div>
+
+                <div class="deckFaders">
+                    <div class="eq-section" id="eqB">
+                        <label>
+                            <span id="highLabelB">TREBLE</span>
+                            <input id="highB" type="range" min="0" max="100" value="50">
+                        </label>
+                        <label id="midContainerB" style="display: none;">
+                            MID
+                            <input id="midB" type="range" min="0" max="100" value="50">
+                        </label>
+                        <label>
+                            <span id="lowLabelB">BASS</span>
+                            <input id="lowB" type="range" min="0" max="100" value="50">
+                        </label>
+                    </div>
+                    <label id="volContainerB">
+                        VOLUME
+                        <input id="volumeB" type="range" min="0" max="100" value="100">
+                    </label>
+                    <div class="rate">
+                        SPEED <strong id="rateB">1.00x</strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- =================================================
+             LOWER PANELS (BROWSE | CONNECTION)
+        ================================================== -->
+        <section class="bottom-panels">
+
+            <!-- BROWSE -->
+            <section class="panel browse">
+                <div class="panelTitle">BROWSE <span id="browseDeck" class="badge">A</span></div>
+
+                <div class="browseData">
+                    <div id="browseTitle" class="browseTitle">Turn the ION BROWSE knob</div>
+                    <div class="browseMeta">
+                        <span id="browseChannel" class="browseChannel">Select Deck A or B</span>
+                        <span id="browsePosition" class="browsePosition">0 / 0</span>
+                    </div>
+                </div>
+
+                <div class="browseControls">
+                    <button id="browseA">BROWSE A</button>
+                    <button id="browseB">BROWSE B</button>
+                    <button id="queueSelected" class="queueButton">+ QUEUE</button>
+                </div>
+            </section>
+
+            <!-- CONNECTION -->
+            <section class="panel connection">
+                <div class="panelTitle">SYSTEM</div>
+                <div class="connectionData">
+                    <strong>MIDI TARGET</strong>
+                    <div id="midiDevice" class="deviceName">Searching for controller...</div>
+                    <div style="margin-top: 5px;">
+                        <select id="controllerSelect" style="width: 100%; padding: 4px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; font-family: inherit; font-size: 0.9em;">
+                            <option value="auto">Auto-Detect Controller</option>
+                            <option value="ion-discover-dj">ION Discover DJ</option>
+                            <option value="pioneer-ddj-family">Pioneer DDJ (FLX4/SB3/1000/etc.)</option>
+                            <option value="numark-mixtrack-family">Numark Mixtrack</option>
+                            <option value="hercules-djcontrol">Hercules DJControl</option>
+                            <option value="traktor-kontrol">Traktor Kontrol</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="connectionControls">
+                    <button id="connectMidi">CONNECT MIDI</button>
+                    <button id="refresh">AUTO-SELECT DECKS</button>
+                </div>
+            </section>
+        </section>
+
+        <footer>
+            <span>WebMixer v1.0</span>
+        </footer>
+    </main>
+
+    <script src="dj.js"></script>
+</body>
+
+</html>
