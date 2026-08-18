@@ -1,12 +1,11 @@
 {
     "manifest_version": 3,
     "name": "WebMixer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Control two YouTube tabs with any standard hardware DJ controller.",
     "permissions": [
         "tabs",
         "storage",
-        "scripting",
         "notifications"
     ],
     "host_permissions": [
