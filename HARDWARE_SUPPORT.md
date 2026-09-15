@@ -53,29 +53,45 @@ This controller has the most comprehensive default mapping in the extension.
 ## 3. Numark Mixtrack Family
 *(Includes controllers containing "Mixtrack" in the name)*
 
-This is a partial mapping focused on core mixing features.
+This controller has full basic mapping.
 
 **Playback & Decks:**
 - **Play/Pause:** Supported (Deck A & B)
 - **Cue:** Supported (Deck A & B)
 
-**Jog Wheels:**
-- **Jog Wheels:** Supported (Deck A & B)
+**Mixer & EQ:**
+- **Volume Faders:** Supported (Deck A & B)
+- **Master Volume:** Supported
+- **Crossfader:** Supported 
+- **High EQ:** Supported (Deck A & B)
+- **Low EQ:** Supported (Deck A & B)
 
-*Note: EQs, Volume Faders, and Browsing are currently unmapped.*
+**Jog Wheels & Navigation:**
+- **Jog Wheels:** Supported (Deck A & B)
+- **Browse Knob (Rotate):** Supported
+- **Browse Push / Load Buttons:** Supported (Deck A load, Deck B load, and generic load are mapped to Browse Push)
 
 ---
 
 ## 4. Hercules DJControl Family
 *(Includes controllers containing "Hercules" or "DJControl" in the name)*
 
-This is a minimal mapping.
+This controller has full basic mapping, supporting both modern (e.g. Inpulse series) and legacy hardware.
 
 **Playback & Decks:**
 - **Play/Pause:** Supported (Deck A & B)
 - **Cue:** Supported (Deck A & B)
 
-*Note: Jog Wheels, EQs, Volume Faders, and Browsing are currently unmapped.*
+**Mixer & EQ:**
+- **Volume Faders:** Supported (Deck A & B)
+- **Crossfader:** Supported 
+- **High EQ:** Supported (Deck A & B)
+- **Low EQ:** Supported (Deck A & B)
+
+**Jog Wheels & Navigation:**
+- **Jog Wheels:** Supported (Deck A & B - pitch bend and scratch dynamically parsed)
+- **Browse Knob (Rotate):** Supported
+- **Browse Push:** Supported
 
 ---
 

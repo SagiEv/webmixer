@@ -263,17 +263,33 @@ const ControllerMappings = [
             const note = data[1];
             const value = data[2];
 
-            const deck = (channel === 0 || channel === 1) ? "A" : (channel === 2 || channel === 3) ? "B" : null;
+            // Inpulse 200: Channel 1 = Deck A, Channel 2 = Deck B, Channel 0 = Global
+            // Older mappings: Channel 0/1 = A, Channel 2/3 = B
+            let deck = null;
+            if (channel === 1) deck = "A";
+            else if (channel === 2) deck = "B";
+            else if (channel === 0 || channel === 3) {
+                // Fallback for older Hercules mappings
+                deck = (channel === 0) ? "A" : "B";
+            }
 
             if (command === 0x90 || command === 0x80) {
                 const pressed = (command === 0x90 && value > 0);
                 let actionObj = { type: "BUTTON", note: note, pressed: pressed };
                 if (!pressed) return actionObj;
 
-                if (deck) {
+                if (channel === 0 && note === 0x00) {
+                    actionObj.action = "BROWSE_PUSH";
+                } else if (deck) {
                     switch (note) {
-                        case 0x01: actionObj.action = "PLAY_PAUSE"; actionObj.deck = deck; break;
-                        case 0x02: actionObj.action = "CUE"; actionObj.deck = deck; break;
+                        case 0x01: // Legacy Play
+                        case 0x07: // Modern Play
+                            actionObj.action = "PLAY_PAUSE"; actionObj.deck = deck; break;
+                        case 0x02: // Legacy Cue
+                        case 0x06: // Modern Cue
+                            actionObj.action = "CUE"; actionObj.deck = deck; break;
+                        case 0x0D: // Load
+                            actionObj.action = "BROWSE_PUSH"; break;
                     }
                 }
                 
@@ -285,6 +301,26 @@ const ControllerMappings = [
 
             if (command === 0xB0) {
                 let actionObj = { type: "CC", controller: note, value: value };
+
+                if (channel === 0) {
+                    switch (note) {
+                        case 0x00: actionObj.action = "CROSSFADER"; break;
+                        case 0x01: 
+                            actionObj.action = "BROWSE_KNOB";
+                            actionObj.delta = decodeRelative(value);
+                            break;
+                    }
+                } else if (deck) {
+                    switch (note) {
+                        case 0x00: actionObj.action = "KNOB_VOL"; actionObj.deck = deck; break;
+                        case 0x02: actionObj.action = "KNOB_LOW"; actionObj.deck = deck; break;
+                        case 0x04: actionObj.action = "KNOB_HIGH"; actionObj.deck = deck; break;
+                        case 0x09:
+                        case 0x0A:
+                            actionObj.action = "JOG"; actionObj.deck = deck; actionObj.delta = decodeRelative(value); break;
+                    }
+                }
+
                 if (!actionObj.action) {
                     console.log("[Hercules] Unmapped CC:", { channel, note: note.toString(16), value });
                 }
