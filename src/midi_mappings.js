@@ -196,18 +196,22 @@ const ControllerMappings = [
             const note = data[1];
             const value = data[2];
 
-            const deck = (channel === 0) ? "A" : (channel === 1) ? "B" : null;
-
             if (command === 0x90 || command === 0x80) {
                 const pressed = (command === 0x90 && value > 0);
                 let actionObj = { type: "BUTTON", note: note, pressed: pressed };
                 if (!pressed) return actionObj;
 
-                if (deck) {
-                    switch (note) {
-                        case 0x3B: actionObj.action = "PLAY_PAUSE"; actionObj.deck = deck; break;
-                        case 0x33: actionObj.action = "CUE"; actionObj.deck = deck; break;
-                    }
+                switch (note) {
+                    // Deck A
+                    case 0x3B: actionObj.action = "PLAY_PAUSE"; actionObj.deck = "A"; break;
+                    case 0x33: actionObj.action = "CUE"; actionObj.deck = "A"; break;
+                    case 0x4B: actionObj.action = "BROWSE_PUSH"; break; // Load A
+                    // Deck B
+                    case 0x42: actionObj.action = "PLAY_PAUSE"; actionObj.deck = "B"; break;
+                    case 0x3C: actionObj.action = "CUE"; actionObj.deck = "B"; break;
+                    case 0x34: actionObj.action = "BROWSE_PUSH"; break; // Load B
+                    // Global
+                    case 0x4F: actionObj.action = "BROWSE_PUSH"; break; // Generic Load
                 }
                 
                 if (!actionObj.action) {
@@ -218,11 +222,27 @@ const ControllerMappings = [
 
             if (command === 0xB0) {
                 let actionObj = { type: "CC", controller: note, value: value };
-                if (deck) {
-                    switch (note) {
-                        case 0x19: actionObj.action = "JOG"; actionObj.deck = deck; actionObj.delta = decodeRelative(value); break;
-                    }
+                
+                switch (note) {
+                    // Deck A
+                    case 0x19: actionObj.action = "JOG"; actionObj.deck = "A"; actionObj.delta = decodeRelative(value); break;
+                    case 0x10: actionObj.action = "KNOB_HIGH"; actionObj.deck = "A"; break;
+                    case 0x14: actionObj.action = "KNOB_LOW"; actionObj.deck = "A"; break;
+                    case 0x08: actionObj.action = "KNOB_VOL"; actionObj.deck = "A"; break;
+                    // Deck B
+                    case 0x18: actionObj.action = "JOG"; actionObj.deck = "B"; actionObj.delta = decodeRelative(value); break;
+                    case 0x11: actionObj.action = "KNOB_HIGH"; actionObj.deck = "B"; break;
+                    case 0x15: actionObj.action = "KNOB_LOW"; actionObj.deck = "B"; break;
+                    case 0x09: actionObj.action = "KNOB_VOL"; actionObj.deck = "B"; break;
+                    // Global
+                    case 0x0A: actionObj.action = "CROSSFADER"; break;
+                    case 0x17: actionObj.action = "MASTER_VOL"; break;
+                    case 0x1A: 
+                        actionObj.action = "BROWSE_KNOB"; 
+                        actionObj.delta = decodeRelative(value); 
+                        break;
                 }
+
                 if (!actionObj.action) {
                     console.log("[Numark] Unmapped CC:", { channel, note: note.toString(16), value });
                 }
