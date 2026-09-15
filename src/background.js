@@ -1095,8 +1095,13 @@ async function executeDJAction(actionObj) {
             break;
             
         case "CROSSFADER":
-            // Invert the physical slider direction
-            state.crossfader = 1 - (value / 127);
+            if (activeControllerParser && activeControllerParser.id === "ion-discover-dj") {
+                // Invert the physical slider direction only for ION
+                state.crossfader = 1 - (value / 127);
+            } else {
+                // Standard mapping for other controllers
+                state.crossfader = value / 127;
+            }
             await applyVolumes();
             await saveState();
             notifyController({ type: "MIXER_CHANGED", state });
