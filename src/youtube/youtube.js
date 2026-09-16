@@ -619,8 +619,11 @@ async function handleDeckCommand(
         switch (command) {
 
             case "PLAY_PAUSE":
-                if (v.paused) {
-                    // Remove 'await' and catch the error gracefully
+                if (value?.forcePause) {
+                    v.pause();
+                } else if (value?.forcePlay) {
+                    v.play().catch(error => console.warn("Play blocked by browser:", error));
+                } else if (v.paused) {
                     v.play().catch(error => console.warn("Play blocked by browser:", error));
                 } else {
                     v.pause();

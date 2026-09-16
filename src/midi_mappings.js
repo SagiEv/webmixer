@@ -27,9 +27,7 @@ const ControllerMappings = [
 
                 // The Scratch button (0x48) on the ION is a hardware toggle, sending 127 then 0 on alternate presses.
                 // We must treat BOTH states as a trigger to toggle the software state correctly on every physical press.
-                if (!pressed && note !== 0x48) {
-                    return actionObj;
-                }
+                // Note-off logic moved after the switch statement
 
                 switch (note) {
                     case 0x4A: actionObj.action = "PLAY_PAUSE"; actionObj.deck = "A"; break;
@@ -44,6 +42,9 @@ const ControllerMappings = [
                     case 0x34: actionObj.action = "FOCUS"; actionObj.deck = "B"; break;
                     case 0x48: actionObj.action = "SCRATCH_TOGGLE"; break;
                     case 0x4F: actionObj.action = "BROWSE_PUSH"; break;
+                }
+                if (!pressed && note !== 0x48 && actionObj.action !== "CUE") {
+                    delete actionObj.action;
                 }
                 return actionObj;
             }
@@ -100,7 +101,7 @@ const ControllerMappings = [
                 const pressed = (command === 0x90 && value > 0);
                 let actionObj = { type: "BUTTON", note: note, pressed: pressed };
 
-                if (!pressed) return actionObj;
+                // Note-off logic moved after the switch statement
 
                 if (deck) {
                     switch (note) {
@@ -130,7 +131,9 @@ const ControllerMappings = [
                 if (!actionObj.action) {
                     console.log("[Pioneer] Unmapped Button:", { channel, note: note.toString(16), value });
                 }
-
+                if (!pressed && actionObj.action !== "CUE") {
+                    delete actionObj.action;
+                }
                 return actionObj;
             }
 
@@ -199,7 +202,7 @@ const ControllerMappings = [
             if (command === 0x90 || command === 0x80) {
                 const pressed = (command === 0x90 && value > 0);
                 let actionObj = { type: "BUTTON", note: note, pressed: pressed };
-                if (!pressed) return actionObj;
+                // Note-off logic moved after the switch statement
 
                 switch (note) {
                     // Deck A
@@ -216,6 +219,9 @@ const ControllerMappings = [
                 
                 if (!actionObj.action) {
                     console.log("[Numark] Unmapped Button:", { channel, note: note.toString(16), value });
+                }
+                if (!pressed && actionObj.action !== "CUE") {
+                    delete actionObj.action;
                 }
                 return actionObj;
             }
@@ -276,7 +282,7 @@ const ControllerMappings = [
             if (command === 0x90 || command === 0x80) {
                 const pressed = (command === 0x90 && value > 0);
                 let actionObj = { type: "BUTTON", note: note, pressed: pressed };
-                if (!pressed) return actionObj;
+                // Note-off logic moved after the switch statement
 
                 if (channel === 0 && note === 0x00) {
                     actionObj.action = "BROWSE_PUSH";
@@ -295,6 +301,9 @@ const ControllerMappings = [
                 
                 if (!actionObj.action) {
                     console.log("[Hercules] Unmapped Button:", { channel, note: note.toString(16), value });
+                }
+                if (!pressed && actionObj.action !== "CUE") {
+                    delete actionObj.action;
                 }
                 return actionObj;
             }
@@ -346,10 +355,13 @@ const ControllerMappings = [
             if (command === 0x90 || command === 0x80) {
                 const pressed = (command === 0x90 && value > 0);
                 let actionObj = { type: "BUTTON", note: note, pressed: pressed };
-                if (!pressed) return actionObj;
+                // Note-off logic moved after the switch statement
 
                 if (!actionObj.action) {
                     console.log("[Traktor] Unmapped Button:", { channel, note: note.toString(16), value });
+                }
+                if (!pressed && actionObj.action !== "CUE") {
+                    delete actionObj.action;
                 }
                 return actionObj;
             }

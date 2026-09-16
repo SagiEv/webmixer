@@ -1045,7 +1045,7 @@ async function executeDJAction(actionObj) {
             break;
             
         case "CUE":
-            await handleCue(deck);
+            await handleCue(deck, actionObj.pressed);
             break;
             
         case "RATE_DOWN":
@@ -1178,16 +1178,30 @@ async function changeRate(
    CUE
 ============================================================ */
 
-async function handleCue(deck) {
+async function handleCue(deck, pressed) {
     const vState = state.videoState?.[deck];
     
-    // Default CDJ logic:
-    // If paused, pressing CUE sets a new cue point.
+    // Note Off (Button Released):
+    if (!pressed) {
+        if (state.cue[deck]) {
+            state.cue[deck] = false;
+            await sendToDeck(deck, "PLAY_PAUSE", { forcePause: true });
+            await sendToDeck(deck, "CUE_RETURN");
+            await saveState();
+        }
+        return;
+    }
+
+    // Note On (Button Pressed):
+    // If paused, pressing CUE sets a new cue point AND stutters (plays while held).
     // If playing, pressing CUE pauses and returns to the cue point.
     if (!vState || vState.paused) {
         await sendToDeck(deck, "CUE_SET");
+        state.cue[deck] = true;
+        await sendToDeck(deck, "PLAY_PAUSE", { forcePlay: true });
     } else {
         // Pause and return
+        state.cue[deck] = false;
         await sendToDeck(deck, "PLAY_PAUSE", { forcePause: true }); 
         await sendToDeck(deck, "CUE_RETURN");
     }
