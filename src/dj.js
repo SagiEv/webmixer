@@ -854,14 +854,8 @@ $("cueA")
         "click",
         () =>
             send({
-                type:
-                    "DECK_COMMAND",
-
-                deck:
-                    "A",
-
-                command:
-                    "CUE_SET"
+                type: "DJ_ACTION",
+                actionObj: { action: "CUE", deck: "A" }
             })
     );
 
@@ -871,14 +865,8 @@ $("cueB")
         "click",
         () =>
             send({
-                type:
-                    "DECK_COMMAND",
-
-                deck:
-                    "B",
-
-                command:
-                    "CUE_SET"
+                type: "DJ_ACTION",
+                actionObj: { action: "CUE", deck: "B" }
             })
     );
 

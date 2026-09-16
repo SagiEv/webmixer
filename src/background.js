@@ -543,6 +543,11 @@ async function handleMessage(
         );
     }
 
+    if (message.type === "DJ_ACTION") {
+        await executeDJAction(message.actionObj);
+        return { ok: true, state };
+    }
+
 
     /* --------------------------------------------------------
        POPUP COMPATIBILITY
