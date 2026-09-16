@@ -14,7 +14,12 @@ jobs:
       - name: Zip extension
         run: |
           cd src
-          zip -r ../extension.zip .
+          zip -r ../extension.zip *
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: extension.zip
 
       - name: Upload to Chrome Web Store
         uses: mnao305/chrome-extension-upload@v5.0.0
