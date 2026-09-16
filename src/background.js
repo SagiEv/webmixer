@@ -78,7 +78,7 @@ const DEFAULT_STATE = {
         B: 0
     },
 
-    eqMode: 2,
+    eqMode: 3,
 
     scratchMode: false,
 
