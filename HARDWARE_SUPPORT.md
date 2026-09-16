@@ -96,7 +96,12 @@ This controller has full basic mapping, supporting both modern (e.g. Inpulse ser
 ---
 
 ## 5. Traktor Kontrol Family
-*(Includes controllers containing "Traktor Kontrol" in the name)*
+*(Includes controllers containing "Traktor Kontrol" in the name, e.g. Kontrol S2, Kontrol S4)*
 
-**Currently Unmapped.**
-The parser for Traktor Kontrol detects the hardware but does not have any specific CCs or Buttons mapped yet. Connecting this hardware will log all button presses and knob turns to the background console to assist with future mapping.
+**Requires Manual Mapping (MIDI Learn)**
+Native Instruments Traktor Kontrol devices use a proprietary, high-resolution HID protocol (NHL) by default, rather than standard MIDI. The open-source Mixxx mappings for these devices are also strictly HID-based and do not contain standard MIDI hex codes.
+
+To map these controllers to this web extension:
+1. Put the controller into **MIDI Mode** (consult your hardware manual).
+2. Connect it and use the built-in "MIDI Learn" logger in the background service worker console to manually discover the Note/CC values.
+3. Add the values to `src/midi_mappings.js` manually.
